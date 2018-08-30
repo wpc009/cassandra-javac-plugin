@@ -31,7 +31,7 @@ public class Sample {
     }
 
     @UDA(keySpace = "kingfisher", isReplaceOld = true,version = 2,finalFunc = "sampleMethod", initCond = "{}",stateFunc = "sampleMethod")
-    private static void sampleUDA(@CqlType(cqlType = "text")String param1,@CqlType(cqlType = "cint") Integer param2,@CqlType(cqlType = "timestamp") Date param3){
+    private static void sampleUDA(@CqlType(cqlType = "")String param1,@CqlType(cqlType = "cint") Integer param2,@CqlType(cqlType = "timestamp") Date param3){
     }
 
 

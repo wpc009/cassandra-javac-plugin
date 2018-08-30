@@ -208,8 +208,10 @@ class CassandraJavacPlugin extends Plugin {
             } else {
               (getAnnotation(classOf[CqlType], node).map(cqlTypeAnnotationInstance => cqlTypeAnnotationInstance.cqlType()) match {
                 case Some(returnType) =>
-                  //                  .flatMap(paramBuilder => Right((a, paramBuilder.result(), returnType)))
-                  Right((a, returnType))
+                  if(returnType != null && returnType.nonEmpty)
+                    Right((a, returnType))
+                  else
+                    Left(Some(CompileException(s"CqlType for ${node.getName} should not be null or empty",node)))
                 case None if a.isInstanceOf[UDA] =>
                   if(!node.getReturnType.asInstanceOf[JCPrimitiveTypeTree].typetag.equals(TypeTag.VOID)){
                     Left(Some(CompileException("UDA must have void return type",node)))
@@ -232,11 +234,15 @@ class CassandraJavacPlugin extends Plugin {
                         None
                     }) match {
                       case Some(paramType) =>
-                        sbuilder
-                          .append(vTree.getName.toString)
-                          .append(" ")
-                          .append(paramType)
-                        prev
+                        if(paramType != null && paramType.nonEmpty){
+                          sbuilder
+                            .append(vTree.getName.toString)
+                            .append(" ")
+                            .append(paramType)
+                          prev
+                        }else{
+                          Left(Some(CompileException(s"CqlType for ${vTree.getName} must not be null or empty",vTree)))
+                        }
                       case None =>
                         Left(Some(CompileException(s"must specify CqlType for parameter ${vTree.getName}", vTree)))
                     }
