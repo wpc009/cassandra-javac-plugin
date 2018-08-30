@@ -35,7 +35,6 @@ object CassandrajavacpluginBuild extends Build {
     base = file("."),
     settings = Defaults.coreDefaultSettings ++ commonSettings ++ Seq(
       name := "cassandra-javac-plugin",
-      version := Ver("0.1-SNAPSHOT").snapshot,
       libraryDependencies ++= Dependencies.cassandrajavacplugin
       // add other settings here
     )
