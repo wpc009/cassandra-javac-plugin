@@ -12,6 +12,12 @@ public class Sample {
         return "method";
     }
 
+    public String nonUDFUDAFunction(){
+        Runtime.getRuntime().availableProcessors();
+        Class a = Compiler.class;
+        return "should not run validation on this method";
+    }
+
     @UDF(name = "overrideMethodName", isReplaceOld = false, keySpace = "kingfisher")
     @CqlType(cqlType = "list<cint>")
     private static String  sampleMethod(@CqlType(cqlType = "text") String someparameters){
@@ -31,7 +37,7 @@ public class Sample {
     }
 
     @UDA(keySpace = "kingfisher", isReplaceOld = true,version = 2,finalFunc = "sampleMethod", initCond = "{}",stateFunc = "sampleMethod")
-    private static void sampleUDA(@CqlType(cqlType = "")String param1,@CqlType(cqlType = "cint") Integer param2,@CqlType(cqlType = "timestamp") Date param3){
+    private static void sampleUDA(@CqlType(cqlType = "text")String param1,@CqlType(cqlType = "cint") Integer param2,@CqlType(cqlType = "timestamp") Date param3){
     }
 
 

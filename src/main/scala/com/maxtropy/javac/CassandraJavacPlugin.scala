@@ -113,42 +113,41 @@ class CassandraJavacPlugin extends Plugin {
       "java.util.zip.",
     ).map(str => symblesTable.fromString(str))
 
+    val methodValidator = new TreeScanner[Unit,Tree]{
+
+      override def visitMemberSelect(node: MemberSelectTree, p: Tree): Unit = {
+        node match {
+          case jcfield: JCFieldAccess =>
+            jcfield.`type` match {
+              case ct: ClassType =>
+                //              blacklistedPatterns.foldLeft(false)( (found,blackName) =>  !found && ct.typarams_field.head.tsym.getQualifiedName.startsWith(blackName))
+                blacklistedPatterns.foreach(name => {
+                  val sym = if (ct.isParameterized) {
+                    ct.typarams_field.head.tsym
+                  } else {
+                    ct.tsym
+                  }
+                  if (sym.getQualifiedName.startsWith(name)) {
+                    log.error(DiagnosticFlag.RESOLVE_ERROR, node.asInstanceOf[JCTree].pos(), "proc.messager", s"accessing ${sym.getQualifiedName} is forbidden in UDF")
+                  }
+
+                })
+
+              case _ =>
+            }
+          case _ =>
+        }
+        super.visitMemberSelect(node, p)
+      }
+    }
+
 
     override def visitMethod(node: MethodTree, p: Tree): Unit = {
       if (CassandraJavacPlugin.getAnnotation(classOf[UDF], node).isDefined) {
-        super.visitMethod(node, p)
+        methodValidator.visitMethod(node,p)
       }
     }
 
-
-    override def visitMemberSelect(node: MemberSelectTree, p: Tree): Unit = {
-      node match {
-        case jcfield: JCFieldAccess =>
-          jcfield.`type` match {
-            case ct: ClassType =>
-              //              blacklistedPatterns.foldLeft(false)( (found,blackName) =>  !found && ct.typarams_field.head.tsym.getQualifiedName.startsWith(blackName))
-              blacklistedPatterns.foreach(name => {
-                val sym = if (ct.isParameterized) {
-                  ct.typarams_field.head.tsym
-                } else {
-                  ct.tsym
-                }
-                if (sym.getQualifiedName.startsWith(name)) {
-                  log.error(DiagnosticFlag.RESOLVE_ERROR, node.asInstanceOf[JCTree].pos(), "proc.messager", s"accessing ${sym.getQualifiedName} is forbidden in UDF")
-                }
-
-              })
-
-            case _ =>
-          }
-        case _ =>
-      }
-      super.visitMemberSelect(node, p)
-    }
-
-    override def visitMemberReference(node: MemberReferenceTree, p: Tree): Unit = {
-      super.visitMemberReference(node, p)
-    }
   }
 
 
