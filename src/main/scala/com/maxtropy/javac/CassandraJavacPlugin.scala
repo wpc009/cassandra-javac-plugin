@@ -134,7 +134,7 @@ class CassandraJavacPlugin extends Plugin {
                   ct.tsym
                 }
                 if (sym.getQualifiedName.startsWith(name)) {
-                  log.error(DiagnosticFlag.RESOLVE_ERROR, node.asInstanceOf[JCTree].pos(), "proc.messager", s"accessing ${ct.typarams_field.head.tsym.getQualifiedName} is forbidden in UDF")
+                  log.error(DiagnosticFlag.RESOLVE_ERROR, node.asInstanceOf[JCTree].pos(), "proc.messager", s"accessing ${sym.getQualifiedName} is forbidden in UDF")
                 }
 
               })
